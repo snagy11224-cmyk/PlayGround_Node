@@ -58,6 +58,9 @@ app.post("/users/login", async (req, res) => {
     //generate JWT tokens
     const accessToken = createAceessToken(user);
     const refreshToken = createRefreshToken(user);
+
+    //respond with tokens
+    res.status(200).json({ accessToken, refreshToken });
 });
 
 /*################################################################################*/
