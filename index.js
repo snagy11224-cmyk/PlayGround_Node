@@ -7,9 +7,11 @@ const port = 4000; //open port --> to communicate with ip address (host)
 
 
 //in-memory data
-let users = [   
-    { email: "salma@salma.salma", password: "1234" }
-]
+let users = [
+    {
+    email: "salma@salma.salma",
+    password: "$2b$10$hashedpasswordhere"
+  }];
 
 //secret keysn for JWT
 const ACCESS_SECRET="mysecretkey";
@@ -21,13 +23,13 @@ const REFRESH_SECRET="myrefreshsecretkey";
 //get endpoint
 //req,res are built in express objects
 app.get("/message", (req, res) => {
-  res.status(200).json({ message: "Hello from Get request" }); //can set both in one line
+  return res.status(200).json({ message: "Hello from Get request" }); //can set both in one line
 });
 
 //post endpoint
 app.post("/hello", (req, res) => {
 const name=req.body.name;  //getting name from request body
-res.status(201).json({ message: `Hello ${name}` });
+return res.status(201).json({ message: `Hello ${name}` });
 });
 
 /*################################################################################*/
@@ -38,8 +40,8 @@ app.post("/users", async (req, res) => {
   const hashedPassword = await bcrypt.hash(password, 10); //10 is the salt => # of rounds to hash the password
   const user={email,password:hashedPassword};
   console.log(user.password);
-  users.push({user});  
-  res.status(201).json({ message: "User Created Successfully!", user: user });
+  users.push(user);  
+  return res.status(201).json({ message: "User Created Successfully!", user: user });
 });
 
 //login endpoint
@@ -48,6 +50,7 @@ app.post("/users/login", async (req, res) => {
    //check ifn user exists in DB
    const user = users.find((u) => u.email === email);
     if (!user) {
+        //return is essential to stop executing rest of the code
         return res.status(401).json({ message: "Invalid credentials" });
     }
     //check if password is correct
@@ -60,7 +63,7 @@ app.post("/users/login", async (req, res) => {
     const refreshToken = createRefreshToken(user);
 
     //respond with tokens
-    res.status(200).json({ accessToken, refreshToken });
+    return res.status(200).json({ accessToken, refreshToken });
 });
 
 /*################################################################################*/
