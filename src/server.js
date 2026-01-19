@@ -9,7 +9,6 @@ app.use('/users', userRouter);
 //we can call users as a mini router app -- from main express app
 // to call user endpoints we will use "/users" as prefix
 
-
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });

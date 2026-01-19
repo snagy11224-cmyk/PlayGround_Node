@@ -31,4 +31,13 @@ exports.loginUser = async (email, password) => {
   };
 };
 
+//get my profile
+exports.getProfile = async (decodedUser) => {
+  const user = userRepo.findEmail(decodedUser.email);
+  if (!user) {
+    throw new Error("User not found");
+  }
+  return user;
+};
+
 
