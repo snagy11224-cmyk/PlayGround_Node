@@ -5,7 +5,7 @@ const userService = require("../services/user.services");
 exports.register = async (req, res, next) => {
   const { email, password } = req.body;             
     try {   
-        const user = await userService.registerUser(email, password);
+        const user = await userService.registerUser(email, password, req.correlationId);
         res.status(201).json({ message: "User registered successfully", email: user.email });
     } catch (error) {
         next(error);

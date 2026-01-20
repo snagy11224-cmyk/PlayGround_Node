@@ -9,14 +9,14 @@ module.exports = (err, req, res, next) => {
     statusCode: err.statusCode,
     operational: operational,
     body: req.body,
-    correlationId: req.correlationId
+    correlationId: req.correlationId,
   });
 
   if (operational) {
-    res.status(err.statusCode).json({ message: err.message });
+    res.status(err.statusCode).json({
+      message: err.message,
+    });
   } else {
     res.status(500).json({ message: "something went wrong" });
   }
-
-
 };

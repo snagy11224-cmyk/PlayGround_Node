@@ -2,16 +2,21 @@ const { UserAlreadyExistsError , UserNotFoundError, NoTokenProvidedError} = requ
 const userRepo=require("../repositories/user.repository");
 const {hashPassword,comparePassword}=require("../utils/hash");
 const {createAccessToken,createRefreshToken,verifyRefreshToken,verifyAccessToken}=require("../utils/jwt");
+const logger = require("../../common/logger/logger");
 
 //register user
-exports.registerUser=async(email,password)=>{
+exports.registerUser=async(email,password, correlationId)=>{
+    logger.info(`Registering user ${correlationId}`);
     const exists=userRepo.findEmail(email);
     if(exists){
         throw UserAlreadyExistsError;
     }
-
+    logger.info(`User does not exist, proceeding to register ${correlationId}`);
     const hashedPassword=await hashPassword(password);
+    logger.info(`hashed password generated ${correlationId}`);
     return userRepo.create(email,hashedPassword);
+    logger.info(`User registered successfully ${correlationId}`); 
+    
 }
 
 //login user
