@@ -1,23 +1,36 @@
-const { UserAlreadyExistsError , UserNotFoundError, NoTokenProvidedError} = require("../errors");
-const userRepo=require("../repositories/user.repository");
-const {hashPassword,comparePassword}=require("../utils/hash");
-const {createAccessToken,createRefreshToken,verifyRefreshToken,verifyAccessToken}=require("../utils/jwt");
+const {
+  UserAlreadyExistsError,
+  UserNotFoundError,
+  NoTokenProvidedError,
+} = require("../errors");
+const userRepo = require("../repositories/user.repository");
+const { hashPassword, comparePassword } = require("../utils/hash");
+const {
+  createAccessToken,
+  createRefreshToken,
+  verifyRefreshToken,
+  verifyAccessToken,
+} = require("../utils/jwt");
 const logger = require("../../common/logger/logger");
 
 //register user
-exports.registerUser=async(email,password, correlationId)=>{
-    logger.info(`Registering user ${correlationId}`);
-    const exists=userRepo.findEmail(email);
-    if(exists){
-        throw UserAlreadyExistsError;
-    }
-    logger.info(`User does not exist, proceeding to register ${correlationId}`);
-    const hashedPassword=await hashPassword(password);
-    logger.info(`hashed password generated ${correlationId}`);
-    return userRepo.create(email,hashedPassword);
-    logger.info(`User registered successfully ${correlationId}`); 
-    
-}
+exports.registerUser = async (email, password, correlationId) => {
+  logger.info("Register user request received", { correlationId });
+
+  const exists = userRepo.findEmail(email);
+  if (exists) {
+    logger.warn("User already exists", { email, correlationId });
+    throw UserAlreadyExistsError;
+  }
+  const hashedPassword = await hashPassword(password);
+  const user = userRepo.create(email, hashedPassword);
+  logger.info("User registered successfully", {
+    userId: user.id,
+    correlationId,
+  });
+
+  return user;
+};
 
 //login user
 exports.loginUser = async (email, password) => {
@@ -51,7 +64,7 @@ exports.refreshToken = async (token) => {
   if (!token) {
     throw NoTokenProvidedError;
   }
-  
+
   const decoded = verifyRefreshToken(token);
 
   const user = userRepo.findEmail(decoded.email);
@@ -61,6 +74,3 @@ exports.refreshToken = async (token) => {
 
   return createAccessToken(user);
 };
-
-
-
