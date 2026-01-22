@@ -2,14 +2,19 @@ const express = require("express");
 const userRouter = require("./app/users/routes");
 const ErrorHandler = require("./app/common/error/errorHandler"); 
 const correlationId = require("./app/common/correlation/correlationId");
+const requestTimeMiddleware = require("./app/common/logger/requestTimeHelper");
+
 const app= express();
 app.use(express.json()); 
 const port = 4000; 
 
 app.use(correlationId)
+app.use(requestTimeMiddleware);
+
 
 app.use('/users', userRouter);
 app.use(ErrorHandler);
+
 
 //we can call users as a mini router app -- from main express app
 // to call user endpoints we will use "/users" as prefix

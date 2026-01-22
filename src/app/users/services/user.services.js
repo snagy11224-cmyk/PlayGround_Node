@@ -15,9 +15,13 @@ const logger = require("../../common/logger/logger");
 
 //register user
 exports.registerUser = async (email, password, correlationId) => {
-  logger.info("Register user request received", { correlationId });
 
-  const exists = userRepo.findEmail(email);
+logger.info("Register user request received", {
+  correlationId,
+  email,
+});
+
+const exists = userRepo.findEmail(email);
   if (exists) {
     logger.warn("User already exists", { email, correlationId });
     throw UserAlreadyExistsError;
